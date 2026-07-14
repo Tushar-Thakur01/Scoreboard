@@ -1,0 +1,11 @@
+{
+  "name": "redis-leaderboard-root",
+  "version": "1.0.0",
+  "description": "Monorepo root for Redis Leaderboard app",
+  "private": true,
+  "scripts": {
+    "postinstall": "npm install --prefix backend-nodejs-redis && npm install --prefix frontend-reactjs",
+    "build": "npm run build --prefix backend-nodejs-redis && npm run build --prefix frontend-reactjs",
+    "start": "npm start --prefix backend-nodejs-redis"
+  }
+}
