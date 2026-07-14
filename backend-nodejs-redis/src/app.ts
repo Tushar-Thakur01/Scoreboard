@@ -13,7 +13,9 @@ const server = http.createServer(app);
 const wss = new WebSocket.Server({ server });
 
 // use REDIS_URL environment variable if available, otherwise use default
-const redis = new Redis(process.env.REDIS_URL || 'redis://localhost:6379');
+const rawRedisUrl = process.env.REDIS_URL || 'redis://localhost:6379';
+const cleanRedisUrl = rawRedisUrl.replace(/^["']|["']$/g, '');
+const redis = new Redis(cleanRedisUrl);
 
 const leaderboardManager = new LeaderboardManager(redis, wss);
 
