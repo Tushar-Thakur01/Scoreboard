@@ -14,7 +14,29 @@ const wss = new WebSocket.Server({ server });
 
 // use REDIS_URL environment variable if available, otherwise use default
 const rawRedisUrl = process.env.REDIS_URL || 'redis://localhost:6379';
-const cleanRedisUrl = rawRedisUrl.replace(/^["']|["']$/g, '');
+
+const getCleanRedisUrl = (url: string): string => {
+  // Find where the actual redis protocol starts to bypass any leading quotes, backslashes, or %22
+  const match = url.match(/(rediss?:\/\/.*)/);
+  if (!match) return url;
+  
+  let clean = match[1].trim();
+  
+  // Strip trailing quotes, backslashes, or URL-encoded quote tokens (%22)
+  if (clean.endsWith('"') || clean.endsWith("'")) {
+    clean = clean.slice(0, -1);
+  }
+  if (clean.endsWith('%22')) {
+    clean = clean.slice(0, -3);
+  }
+  if (clean.endsWith('\\')) {
+    clean = clean.slice(0, -1);
+  }
+  
+  return clean.trim();
+};
+
+const cleanRedisUrl = getCleanRedisUrl(rawRedisUrl);
 const redis = new Redis(cleanRedisUrl);
 
 const leaderboardManager = new LeaderboardManager(redis, wss);
